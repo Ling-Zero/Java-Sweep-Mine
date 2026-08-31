@@ -1,0 +1,17 @@
+# 构建产物
+/out/
+/dist/
+/dist-jar/
+/packaging-out/
+/testout/
+*.class
+
+# 打包/临时文件
+*.log
+*.tmp
+*.DDF
+*.sed
+
+# 临时自检源码（一次性测试用，不纳入版本）
+/Test*.java
+/Test*.cs
