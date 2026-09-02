@@ -9,11 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 打包工具：调用 {@link MinesweeperIcon} 生成多尺寸 icon.ico（PNG 内嵌格式），
- * 供 jpackage --icon 嵌入到 exe 文件图标。
- * 用法：java -cp out;packaging-out MakeIcon [输出路径]
- */
 public class MakeIcon {
 
     public static void main(String[] args) throws Exception {
@@ -28,22 +23,20 @@ public class MakeIcon {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int count = sizes.length;
-        // ICONDIR（小端序）
-        writeShortLE(out, 0);          // reserved
-        writeShortLE(out, 1);          // type: icon
+        writeShortLE(out, 0);
+        writeShortLE(out, 1);
         writeShortLE(out, count);
-        // ICONDIRENTRY * count（小端序）
         int offset = 6 + 16 * count;
         for (int i = 0; i < count; i++) {
             int s = sizes[i];
-            out.write(s == 256 ? 0 : s);   // width
-            out.write(s == 256 ? 0 : s);   // height
-            out.write(0);                  // color count
-            out.write(0);                  // reserved
-            writeShortLE(out, 1);          // planes
-            writeShortLE(out, 32);         // bit count
-            writeIntLE(out, pngs.get(i).length);  // bytes in resource
-            writeIntLE(out, offset);       // image offset
+            out.write(s == 256 ? 0 : s);
+            out.write(s == 256 ? 0 : s);
+            out.write(0);
+            out.write(0);
+            writeShortLE(out, 1);
+            writeShortLE(out, 32);
+            writeIntLE(out, pngs.get(i).length);
+            writeIntLE(out, offset);
             offset += pngs.get(i).length;
         }
         for (byte[] p : pngs) {
@@ -55,7 +48,6 @@ public class MakeIcon {
         System.out.println("icon.ico written: " + out.size() + " bytes, sizes=" + sizes.length);
     }
 
-    /** ICO 格式为小端序，手动写入 */
     private static void writeShortLE(ByteArrayOutputStream out, int v) {
         out.write(v & 0xFF);
         out.write((v >> 8) & 0xFF);

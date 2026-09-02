@@ -15,12 +15,6 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 
-/**
- * 自定义级别对话框（模态对话框）。
- * <p>
- * 用户可输入雷区的<b>行数</b>、<b>列数</b>、<b>雷数</b>以及<b>级别名称</b>。
- * 点击“确定”后通过 {@link #getConfig()} 返回配置；点击“取消”返回 null。
- */
 public class CustomLevelDialog extends JDialog {
 
     private final SpinnerNumberModel rowModel = new SpinnerNumberModel(9, 5, 30, 1);
@@ -31,7 +25,7 @@ public class CustomLevelDialog extends JDialog {
     private GameConfig config;
 
     public CustomLevelDialog(Frame owner) {
-        super(owner, "自定义级别", true); // 模态对话框
+        super(owner, "自定义级别", true);
         buildUI();
         pack();
         setLocationRelativeTo(owner);
@@ -55,7 +49,6 @@ public class CustomLevelDialog extends JDialog {
         form.add(new JLabel("级别名称："));
         form.add(nameField);
 
-        // 行列变化时，雷数上限 = 行数 × 列数 - 1
         ChangeListener clamp = ignored -> {
             int max = rowModel.getNumber().intValue() * colModel.getNumber().intValue() - 1;
             mineModel.setMaximum(max);
@@ -108,7 +101,6 @@ public class CustomLevelDialog extends JDialog {
         dispose();
     }
 
-    /** 确定后返回用户设置的配置；取消时返回 null */
     public GameConfig getConfig() {
         return config;
     }

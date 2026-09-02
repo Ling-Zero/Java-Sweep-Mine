@@ -29,14 +29,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 
-/**
- * 扫雷主窗口：菜单栏、棋盘、状态栏。
- * <ul>
- *   <li>“游戏 → 难度 → 自定义...”：弹出模态对话框，自定义行数、列数、雷数与级别名称；</li>
- *   <li>“游戏 → 关卡（三关扫雷）”：三关过关玩法，过一关后询问是否继续下一关；</li>
- *   <li>左键点到安全格、右键标记地雷均有音效（见 {@link SoundPlayer}）。</li>
- * </ul>
- */
 public class AppWindow extends JFrame {
 
     private final LevelManager levels = new LevelManager();
@@ -51,21 +43,20 @@ public class AppWindow extends JFrame {
 
     private Component boardHolder;
     private GameConfig current;
-    private int levelIndex = -1; // 1..3 表示正在玩第几关；-1 表示普通难度/自定义模式
+    private int levelIndex = -1;
 
     public AppWindow() {
         super("扫雷游戏 — 三关扫雷");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setIconImage(MinesweeperIcon.create(48)); // 窗口/任务栏图标
+        setIconImage(MinesweeperIcon.create(48));
         setJMenuBar(buildMenuBar());
         buildStatusBar();
-        startLevel(1); // 默认从第一关开始
+        startLevel(1);
         pack();
         setLocationRelativeTo(null);
         setMinimumSize(getSize());
     }
 
-    // ---------------------------------------------------------------- 菜单
 
     private JMenuBar buildMenuBar() {
         JMenuBar bar = new JMenuBar();
@@ -82,7 +73,6 @@ public class AppWindow extends JFrame {
         game.add(restart);
         game.addSeparator();
 
-        // —— 难度子菜单（含“自定义级别”菜单项）——
         JMenu diffMenu = new JMenu("难度");
         diffMenu.setIcon(GameIcons.flag(16));
         diffItems = new JRadioButtonMenuItem[LevelManager.PRESETS.length + 1];
@@ -106,7 +96,6 @@ public class AppWindow extends JFrame {
         game.add(diffMenu);
         game.addSeparator();
 
-        // —— 三关扫雷 ——
         JMenu levelMenu = new JMenu("关卡（三关扫雷）");
         levelMenu.setIcon(GameIcons.flag(16));
         for (int i = 0; i < levels.getTotalLevels(); i++) {
@@ -150,7 +139,6 @@ public class AppWindow extends JFrame {
     }
 
     private void buildStatusBar() {
-        // 三个信息标签统一排版：级别名加粗、剩余雷数带地雷图标、用时带时钟图标
         levelLabel.setFont(levelLabel.getFont().deriveFont(Font.BOLD, 13f));
         mineLabel.setIcon(GameIcons.bomb(16));
         mineLabel.setIconTextGap(4);
@@ -178,15 +166,12 @@ public class AppWindow extends JFrame {
         add(status, BorderLayout.SOUTH);
     }
 
-    // ---------------------------------------------------------------- 关卡流程
 
-    /** 从第 idx 关开始（1..3），进入三关扫雷模式 */
     private void startLevel(int idx) {
         levelIndex = idx;
         newGame(levels.getLevel(idx - 1));
     }
 
-    /** 以指定配置开始一局新游戏 */
     private void newGame(GameConfig cfg) {
         this.current = cfg;
         clock.stop();
@@ -220,7 +205,6 @@ public class AppWindow extends JFrame {
                 }
             }
         });
-        // 棋盘放入带渐变边框的容器并铺满；棋盘自身随窗口大小自适应缩放
         JPanel wrapper = new GradientPanel();
         wrapper.add(field, BorderLayout.CENTER);
         boardHolder = wrapper;
@@ -229,7 +213,6 @@ public class AppWindow extends JFrame {
         repaint();
     }
 
-    /** 踩雷：播放失败音，提示重新开始 */
     private void handleLose() {
         SoundPlayer.playLose();
         int r = JOptionPane.showConfirmDialog(this,
@@ -241,7 +224,6 @@ public class AppWindow extends JFrame {
         }
     }
 
-    /** 过关：播放成功音效，按关卡流程询问是否继续下一关 */
     private void handleWin() {
         SoundPlayer.playWin();
         if (levelIndex >= 1 && levelIndex < levels.getTotalLevels()) {
@@ -262,7 +244,6 @@ public class AppWindow extends JFrame {
                 startLevel(1);
             }
         } else {
-            // 普通难度 / 自定义模式
             int r = JOptionPane.showConfirmDialog(this,
                     "恭喜过关！（当前为" + current.name() + "模式）\n是否再来一局？",
                     "过关", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
@@ -273,9 +254,7 @@ public class AppWindow extends JFrame {
         }
     }
 
-    // ---------------------------------------------------------------- 自定义级别
 
-    /** 弹出自定义级别模态对话框，确定后以自定义配置开局 */
     private void openCustomDialog() {
         JRadioButtonMenuItem prev = selectedDifficulty();
         CustomLevelDialog dlg = new CustomLevelDialog(this);
@@ -285,7 +264,7 @@ public class AppWindow extends JFrame {
             levelIndex = -1;
             newGame(cfg);
         } else if (prev != null) {
-            prev.setSelected(true); // 取消时恢复之前的难度选择
+            prev.setSelected(true);
         }
     }
 
@@ -298,7 +277,6 @@ public class AppWindow extends JFrame {
         return null;
     }
 
-    /** 棋盘外围的渐变背景容器：棋盘铺满并自适应，四周留 8px 渐变边框 */
     private static final class GradientPanel extends JPanel {
         GradientPanel() {
             super(new BorderLayout());

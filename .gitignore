@@ -12,6 +12,10 @@
 *.DDF
 *.sed
 
+# IDE 本地状态
+.idea/vcs.xml
+.idea/workspace.xml
+
 # 临时自检源码（一次性测试用，不纳入版本）
 /Test*.java
 /Test*.cs
